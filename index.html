@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Xplorify | Rungta International Skill University</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
+        }
+
+        .animated-gradient-bg {
+            background: linear-gradient(-45deg, #020617, #0f172a, #1e3a8a, #020617);
+            background-size: 400% 400%;
+            animation: gradientShift 12s ease infinite;
+        }
+
+        .hero-mesh {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .floating-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .content-gradient {
+            background: linear-gradient(to bottom, #0f172a, #020617);
+        }
+
+        body {
+            background-color: #020617;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-up {
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        #map { height: 100%; width: 100%; }
+
+        .custom-marker {
+            width: 34px; height: 34px;
+            border-radius: 50% 50% 50% 0;
+            background: #2563eb;
+            position: absolute;
+            transform: rotate(-45deg);
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
+        }
+        .custom-marker i { transform: rotate(45deg); color: white; font-size: 14px; }
+
+        .dashboard-glass {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(24px);
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255,255,255,0.1);
+        }
+
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-premium {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            box-shadow: 0 8px 25px -8px #2563eb;
+            transition: all 0.3s ease;
+        }
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px -8px #2563eb;
+        }
+
+        .stat-ring {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .stat-ring::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.05);
+        }
+        .stat-ring-progress {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #3b82f6;
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body class="text-slate-100 h-screen flex flex-col overflow-hidden font-sans">
+
+    <!-- Main Scroll Container -->
+    <div id="pageScrollContainer" class="flex-1 overflow-y-auto no-scrollbar relative content-gradient">
+        
+        <!-- Premium Interactive Hero -->
+        <header class="animated-gradient-bg min-h-[600px] flex items-center relative overflow-hidden">
+            <!-- Background Orbs -->
+            <div class="hero-mesh">
+                <div class="floating-orb w-[500px] h-[500px] bg-blue-600/10 top-[-10%] right-[-5%]" style="animation-delay: 0s;"></div>
+                <div class="floating-orb w-96 h-96 bg-indigo-600/10 bottom-[-10%] left-[-5%]" style="animation-delay: -2s;"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6 py-20 w-full relative z-10">
+                <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+                    <!-- Text Content -->
+                    <div class="flex-1 text-center lg:text-left animate-fade-up">
+                        <div class="inline-flex items-center gap-3 bg-blue-500/10 border border-blue-500/20 px-5 py-2.5 rounded-2xl mb-10 backdrop-blur-xl">
+                            <span class="relative flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-[11px] font-black uppercase tracking-[0.4em] text-emerald-400">Campus+Local Live Telemetry</span>
+                        </div>
+                        
+                        <h1 class="text-6xl lg:text-8xl font-black mb-8 tracking-tighter leading-[0.9] text-gradient">
+                            Xplorify <br/> </h1> <h2> EXPLORE YOUR WORLD </h2>
+                        
+                        
+                        <p class="text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 mb-12 font-medium leading-relaxed">
+                            A smart-discovery engine for <strong>Rungta International Skill University</strong>. Experience the campus with real-time facility insights and local intelligence.
+                        </p>
+
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-6">
+                            <button onclick="toggleView()" class="btn-premium text-white px-12 py-6 rounded-[2rem] font-black text-xs tracking-widest flex items-center gap-4 group">
+                                <i class="fa-solid fa-map-location-dot text-xl group-hover:rotate-12 transition-transform"></i> EXPLORE INTERACTIVE MAP
+                            </button>
+                            <div class="hidden sm:flex items-center gap-5 px-8 py-5 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md">
+                                <div class="text-left">
+                                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Network Node</p>
+                                    <p class="text-xs font-mono font-bold text-blue-400">10.0.5.151</p>
+                                </div>
+                                <div class="w-px h-8 bg-white/10"></div>
+                                <i class="fa-solid fa-signal text-emerald-500 animate-pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Dashboard Card (THE REAL DASHBOARD) -->
+                    <div class="flex-1 w-full max-w-xl animate-fade-up" style="animation-delay: 0.2s;">
+                        <div class="dashboard-glass rounded-[3.5rem] p-1 shadow-2xl overflow-hidden group">
+                            <!-- Inner Container -->
+                            <div class="bg-slate-900/40 rounded-[3.4rem] p-10 relative">
+                                <!-- Top Bar -->
+                                <div class="flex items-center justify-between mb-10 pb-6 border-b border-white/5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/40">
+                                            <i class="fa-solid fa-microchip text-white text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Campus Intelligence</p>
+                                            <p class="text-xs font-bold text-white">v2.5 Terminal</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="flex items-center gap-2 justify-end">
+                                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                            <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Time+5:30</p>
+                                        </div>
+                                        <p id="liveTime" class="text-xs font-mono font-bold text-slate-400 mt-1">00:00:00</p>
+                                    </div>
+                                </div>
+
+                                <!-- Live Modules Grid -->
+                                <div class="grid grid-cols-2 gap-6 mb-10">
+                                    <!-- Facility 1 -->
+                                    <div class="bg-white/5 rounded-[2rem] p-6 border border-white/5 hover:border-blue-500/30 transition-all cursor-default group/mod">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <i class="fa-solid fa-mug-hot text-orange-400"></i>
+                                            <span class="text-[8px] font-black text-orange-400 bg-orange-400/10 px-2 py-1 rounded-md">BUSY</span>
+                                        </div>
+                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Chai Adda</p>
+                                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-2">
+                                            <div class="h-full bg-orange-500 w-[85%]"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Facility 2 -->
+                                    <div class="bg-white/5 rounded-[2rem] p-6 border border-white/5 hover:border-blue-500/30 transition-all cursor-default">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <i class="fa-solid fa-book text-blue-400"></i>
+                                            <span class="text-[8px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md">QUIET</span>
+                                        </div>
+                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Library (C Block)</p>
+                                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-2">
+                                            <div class="h-full bg-emerald-500 w-[30%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Live Activity Feed -->
+                                <div class="space-y-4 mb-10">
+                                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                                        <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                        <p class="text-[11px] font-medium text-slate-300">Exam Section is currently <strong>processing</strong> admit cards.</p>
+                                    </div>
+                                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 opacity-60">
+                                        <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                                        <p class="text-[11px] font-medium text-slate-400">Admission Section updated: +12 new registrations.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Stats Bar -->
+                                <div class="grid grid-cols-3 gap-4 pt-8 border-t border-white/5">
+                                    <div class="flex flex-col items-center">
+                                        <div class="stat-ring mb-3">
+                                            <div class="stat-ring-progress" style="border-top-color: #3b82f6; transform: rotate(120deg);"></div>
+                                            <i class="fa-solid fa-graduation-cap text-xs text-blue-400"></i>
+                                        </div>
+                                        <p class="text-xs font-black text-white">4 Blocks</p>
+                                        <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Academic</p>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="stat-ring mb-3">
+                                            <div class="stat-ring-progress" style="border-top-color: #f59e0b; transform: rotate(240deg);"></div>
+                                            <i class="fa-solid fa-utensils text-xs text-orange-400"></i>
+                                        </div>
+                                        <p class="text-xs font-black text-white">6 Spots</p>
+                                        <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Dining</p>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="stat-ring mb-3">
+                                            <div class="stat-ring-progress" style="border-top-color: #10b981; transform: rotate(350deg);"></div>
+                                            <i class="fa-solid fa-square-parking text-xs text-emerald-400"></i>
+                                        </div>
+                                        <p class="text-xs font-black text-white">Secure</p>
+                                        <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Parking</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Fade Out -->
+            <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#020617] to-transparent z-0"></div>
+        </header>
+
+        <!-- Sticky Navigation & Search -->
+        <div class="sticky-nav bg-dark-950/80 backdrop-blur-3xl">
+            <div class="max-w-7xl mx-auto px-6 py-8">
+                <div class="flex flex-col md:flex-row gap-8 items-center">
+                    <!-- High-End Search Bar -->
+                    <div class="relative group flex-1 w-full">
+                        <div class="absolute inset-y-0 left-0 pl-7 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-search text-blue-500/40 group-focus-within:text-blue-500 transition-colors"></i>
+                        </div>
+                        <input type="text" id="searchInput" placeholder="Search Rubi, Admissions, PG rooms, Chai Adda..."
+                            class="w-full bg-white/5 text-white pl-16 pr-8 py-6 rounded-[2rem] border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium placeholder-slate-500 text-sm transition-all shadow-2xl">
+                    </div>
+
+                    <!-- Custom Tab Switcher -->
+                    <div class="flex p-2 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-xl shrink-0">
+                        <button onclick="switchTab('inCampus')" id="tab-inCampus" class="px-10 py-4 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] transition-all text-white bg-blue-600 shadow-xl shadow-blue-600/30">
+                            IN-CAMPUS
+                        </button>
+                        <button onclick="switchTab('outCampus')" id="tab-outCampus" class="px-10 py-4 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] transition-all text-slate-400 hover:text-slate-200">
+                            OUT-CAMPUS
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explore Content -->
+        <div id="listViewContainer" class="p-6 pb-48">
+            
+            <!-- Category Chips -->
+            <div class="flex gap-4 overflow-x-auto no-scrollbar mb-16 py-4 max-w-7xl mx-auto" id="filterContainer">
+                <!-- JS Populated -->
+            </div>
+
+            <!-- Discovery Grid -->
+            <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
+                <!-- Cards Injected -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden flex flex-col items-center justify-center py-48 text-center">
+                <div class="w-32 h-32 bg-white/5 rounded-full flex items-center justify-center mb-10 border border-white/10">
+                    <i class="fa-solid fa-compass text-5xl text-slate-700"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-300 mb-2">Location Not Found</h3>
+                <p class="text-sm font-bold text-slate-500 uppercase tracking-[0.3em]">Try searching for 'Block' or 'Chai'</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Map Interface Overlay -->
+    <div id="mapViewContainer" class="fixed inset-0 translate-x-full transition-transform duration-700 z-50 bg-slate-950">
+        <div id="map"></div>
+        <button onclick="toggleView()" class="absolute top-10 left-10 z-[1000] dashboard-glass text-white px-10 py-5 rounded-[2rem] font-black text-[10px] tracking-[0.3em] shadow-2xl flex items-center gap-4 active:scale-95 transition-transform border border-white/20">
+            <i class="fa-solid fa-chevron-left text-blue-400"></i> RETURN TO DASHBOARD
+        </button>
+    </div>
+
+    <!-- Professional Detail Modal -->
+    <div id="detailModal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/95 backdrop-blur-2xl opacity-0 transition-opacity" id="modalBackdrop" onclick="closeModal()"></div>
+        <div class="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-8 pointer-events-none">
+            <div class="bg-slate-900 w-full sm:max-w-3xl sm:rounded-[4rem] rounded-t-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] transform translate-y-full transition-transform duration-600 pointer-events-auto max-h-[96vh] flex flex-col overflow-hidden border border-white/10" id="modalPanel">
+                <!-- Hero Image Section -->
+                <div class="relative h-[480px] shrink-0">
+                    <img id="modalImage" src="" class="w-full h-full object-cover" alt="">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                    <button onclick="closeModal()" class="absolute top-10 right-10 bg-black/40 hover:bg-black/60 backdrop-blur-3xl text-white w-16 h-16 rounded-full flex items-center justify-center border border-white/10 transition-all active:scale-90">
+                        <i class="fa-solid fa-xmark text-2xl"></i>
+                    </button>
+                    <div class="absolute bottom-0 left-0 w-full p-14">
+                        <span id="modalCategory" class="inline-block bg-blue-600 text-white text-[10px] font-black px-6 py-2.5 rounded-full uppercase tracking-[0.3em] mb-8 shadow-2xl shadow-blue-600/40">CATEGORY</span>
+                        <h2 id="modalTitle" class="text-6xl font-black text-white leading-tight tracking-tighter">Title</h2>
+                    </div>
+                </div>
+
+                <!-- Info Section -->
+                <div class="p-14 overflow-y-auto no-scrollbar flex-1 bg-slate-900">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-10 mb-14 pb-12 border-b border-white/5">
+                        <div class="flex flex-col gap-4">
+                            <span class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em]">Spatial Awareness</span>
+                            <div class="flex items-center text-blue-400 font-bold text-xl">
+                                <div class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mr-5 border border-blue-500/20">
+                                    <i class="fa-solid fa-map-location-dot"></i>
+                                </div>
+                                <span id="modalDistance">Campus Center</span>
+                            </div>
+                        </div>
+                        <div class="bg-emerald-500/10 text-emerald-400 px-8 py-4 rounded-3xl text-sm font-black flex items-center gap-5 border border-emerald-500/20 w-fit">
+                            <span id="modalRating">4.9</span>
+                            <i class="fa-solid fa-star text-xs"></i>
+                        </div>
+                    </div>
+
+                    <div class="mb-14">
+                        <h3 class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-8">Asset Description</h3>
+                        <p id="modalDescription" class="text-slate-300 text-2xl leading-[1.6] font-medium tracking-tight">Description text...</p>
+                    </div>
+
+                    <div id="modalTags" class="flex flex-wrap gap-5 mb-20"></div>
+
+                    <!-- Action Footer -->
+                    <div class="grid grid-cols-2 gap-8 sticky bottom-0 bg-slate-900 pt-10 pb-2">
+                        <button class="flex items-center justify-center gap-5 py-7 bg-slate-800 rounded-[2.5rem] font-black text-white text-[11px] tracking-[0.3em] border border-white/5 hover:bg-slate-700 transition-all group">
+                            <i class="fa-solid fa-bookmark group-hover:scale-125 transition-transform"></i> SAVE RECORD
+                        </button>
+                        <a id="modalMapLink" href="#" target="_blank" class="flex items-center justify-center gap-5 py-7 bg-blue-600 text-white rounded-[2.5rem] font-black text-[11px] tracking-[0.3em] shadow-[0_20px_40px_-10px_rgba(37,99,235,0.5)] hover:bg-blue-500 transition-all group">
+                            <i class="fa-solid fa-location-arrow group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i> START GUIDANCE
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        const collegeCoords = [21.2120, 81.3733];
+        
+        // Dynamic Terminal Clock
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2,'0') + ":" + 
+                            now.getMinutes().toString().padStart(2,'0') + ":" + 
+                            now.getSeconds().toString().padStart(2,'0');
+            document.getElementById('liveTime').innerText = timeStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        const database = {
+            inCampus: [
+                { id: 1, title: "Block A", category: "Academic", image: "a-block.png", rating: 4.8, distance: "Primary Entrance Zone", description: "The administrative powerhouse of Rungta. Houses the Student Section (FA-01), Admission Cell, and the Examination Section (FA-09). Most freshman engineering classes are conducted here in high-tech smart rooms.", tags: ["Admin", "1st Year", "Smart Class"], coords: [21.2125, 81.3735] },
+
+                { id: 2, title: "Block B", category: "Academic", image: "B block.webp", rating: 4.6, distance: "Central Square", description: "The cultural hub. Contains the main Auditorium and the 'Rubi' Entrepreneurship cell where students innovate and develop real-world products.", tags: ["Startup", "Auditorium", "Rubi Hub"], coords: [21.2122, 81.3742] },
+
+                { id: 3, title: "Block C", category: "Academic", image: "C block.jpg", rating: 4.5, distance: "North Sector", description: "Dedicated to senior students, Study Management, and core Science disciplines. Advanced labs and peaceful study zones.", tags: ["Management", "Labs", "Seniors"], coords: [21.2130, 81.3738] },
+
+                { id: 4, title: "Pharmacy Block", category: "Academic", image: "pharmacy-block.jpg", rating: 4.7, distance: "East Side", description: "Specialized building for Pharmaceutical Sciences. Modern chemistry labs and medical research infrastructure.", tags: ["Pharmacy", "Medical", "Labs"], coords: [21.2128, 81.3745] },
+
+                { id: 5, title: "Auditorium", category: "Academic", image: "auditorium_R1.webp", rating: 4.7, distance: "Block B - Ground Floor", description: "For Important Meeting and Conference. Silient Zone", tags: ["Meeting", "Conference"], coords: [21.233780, 81.347338] },
+
+                { id: 6, title: "Chai Adda", category: "Food", image: "chai-adda.jpg", rating: 4.9, distance: "Between Block A & B", description: "The soul of the campus. Famous for ginger tea, cold coffee, and the legendary instant Maggi sessions.", tags: ["Tea", "Hangout", "Maggi"], coords: [21.2118, 81.3725] },
+
+                { id: 6, title: "Canteen", category: "Food", image: "canteen.jpg", rating: 4.3, distance: "West Zone", description: "Extensive menu featuring South Indian snacks, diverse appetizers, and cold drinks. Great for group meals.", tags: ["Dosa", "Snacks", "Lunch"], coords: [21.2115, 81.3740] },
+
+                { id: 7, title: "Juicy Corner", category: "Food", image: "juice-corner.jpg", rating: 4.7, distance: "Front of Mess", description: "Health-focused spot serving fresh seasonal fruit juices and protein-rich fruit salads.", tags: ["Fresh Juice", "Healthy", "Salads"], coords: [21.2128, 81.3736] },
+
+                { id: 8, title: "Main Mess", category: "Food", image: "mess.jpg", rating: 4.1, distance: "Hostel Entry", description: "Large-scale dining hall serving Thali meals for hostellers and day scholars alike.", tags: ["Thali", "Daily Meals", "Veg"], coords: [21.2135, 81.3730] },
+
+                { id: 9, title: "Divine Stationery", category: "Utility", image: "divine-stationary.jpg", rating: 4.5, distance: "Block B Entry", description: "Complete store for stationery, personal care items, snacks, and high-speed photocopying/printing.", tags: ["Photocopy", "Books", "Supplies"], coords: [21.2120, 81.3740] },
+
+                { id: 10, title: "Student Parking", category: "Parking", image: "Students-parking.jpg", rating: 4.0, distance: "Gate 1", description: "Dedicated secure area for student 2-wheelers. Staff sections also included.", tags: ["Two-Wheeler", "Staff"], coords: [21.2110, 81.3720] },
+
+                { id: 11, title: "Teacher Parking", category: "Parking", image: "teachers-parking.jpg", rating: 4.2, distance: "Admin Rear", description: "Exclusive parking for faculty members' two-wheelers and four-wheelers.", tags: ["Car Parking", "Faculty"], coords: [21.2128, 81.3725] },
+
+                { id: 12, title: "Sports Complex", category: "Sports", image: "basketball-court.jpg", rating: 4.8, distance: "North End", description: "Includes the main athletic field and professional basketball court.", tags: ["Basketball", "Cricket", "Training"], coords: [21.2140, 81.3740] },
+            ],
+            outCampus: [
+                { id: 101, title: "Surya TI Mall", category: "Shopping", image: "surya mall.webp", rating: 4.6, distance: "5.2 km", description: "The ultimate weekend spot for movies, food court dining, and global brands.", tags: ["Mall", "Movies", "Food"], coords: [21.1965, 81.3325] },
+
+                { id: 102, title: "Care Hospital", category: "Emergency", image: "care-hospital.jpeg", rating: 4.4, distance: "2.0 km", description: "High-tier medical facility available 24/7 for student health emergencies.", tags: ["24/7", "Medical", "ER"], coords: [21.1925, 81.3550] },
+                
+                { id: 103, title: "Red Chilli", category: "Food", image: "red-chilli.jpg", rating: 4.5, distance: "2.1 km", description: "Local favorite for late-night meals. Serves authentic Non-veg food.", tags: ["Late Night", "Low Budget"], coords: [21.2180, 81.3750] },
+
+                { id: 104, title: "Boys PG", category: "Living", image: "boys-pg.jpg", rating: 4.2, distance: "1.5 km", description: "Secure housing for male students with WiFi and laundry.", tags: ["Stay", "Budget"], coords: [21.223126, 81.345442] },
+
+                { id: 105, title: "Girls PG", category: "Living", image: "girls-pg.jpg", rating: 4.4, distance: "1.1 km", description: "High-security PG for female students with strictly controlled entry.", tags: ["Girls Only", "Stay"], coords: [21.223126, 81.345442] },
+
+                { id: 106, title: "Petrol Pump", category: "Fuel", image: "petrolpump.avif", rating: 4.4, distance: "100 m", description: "For Fuel Filling in Vehicles", tags: ["fuel"], coords: [21.2160, 81.3710] },
+
+                { id: 107, title: "Hotel Bellfare", category: "Living", image: "Hotel-Bellfair.jpg", rating: 4.4, distance: "700 m", description: "For Staying In Emergency For Few Days", tags: ["Staying"], coords: [21.230590,81.349031] },
+
+                { id: 108, title: "Medical Plus", category: "Emergency", image: "medplus.jpg", rating: 4.4, distance: "2.4 km", description: "For Medicine in Emergency in Fever, Headache Etc..", tags: ["Medicine"], coords: [21.220610,81.344096] },
+
+                { id: 106, title: "Salon", category: "Utility", image: "Galaxy-salon.jpg", rating: 4.4, distance: "4.2 km", description: "For Shaving, Haircutting And Maintenance", tags: ["Hair-Cutting", "Shaving"], coords: [21.219484,81.322748] },
+
+                { id: 106, title: "Alpha Biryani", category: "Food", image: "Alpha biryani.jpg", rating: 4.4, distance: "3.9 km", description: "For Birthday Celebration, Biryani, Non- Veh and Veg Food", tags: ["Food", "Celebrating"], coords: [21.218270,81.334927] },
+
+                { id: 106, title: "Durg Station", category: "Station", image: "durg station.avif", rating: 4.4, distance: "10.3 km", description: "For Travelling in train, Booking Ticket Offline", tags: ["Station"], coords: [21.199749,81.291562] },
+            ]
+        };
+
+        let currentTab = 'inCampus';
+        let currentFilter = 'All';
+        let isMapView = false;
+        let mapInstance = null;
+        let markers = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFilters();
+            renderItems();
+        });
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            currentFilter = 'All';
+            const btnIn = document.getElementById('tab-inCampus');
+            const btnOut = document.getElementById('tab-outCampus');
+
+            if(tabName === 'inCampus') {
+                btnIn.className = "px-10 py-4 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] transition-all text-white bg-blue-600 shadow-xl shadow-blue-600/30";
+                btnOut.className = "px-10 py-4 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] transition-all text-slate-400 hover:text-slate-200";
+            } else {
+                btnOut.className = "px-10 py-4 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] transition-all text-white bg-blue-600 shadow-xl shadow-blue-600/30";
+                btnIn.className = "px-10 py-4 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] transition-all text-slate-400 hover:text-slate-200";
+            }
+            
+            renderFilters(); renderItems();
+            if (isMapView) updateMapMarkers();
+        }
+
+        function toggleView() {
+            isMapView = !isMapView;
+            const mapC = document.getElementById('mapViewContainer');
+
+            if (isMapView) {
+                mapC.classList.remove('translate-x-full');
+                if (!mapInstance) setTimeout(initMap, 100); else updateMapMarkers();
+            } else {
+                mapC.classList.add('translate-x-full');
+            }
+        }
+
+        function getCategories() {
+            const items = database[currentTab];
+            return ['All', ...Array.from(new Set(items.map(i => i.category)))];
+        }
+
+        function renderFilters() {
+            const container = document.getElementById('filterContainer');
+            container.innerHTML = getCategories().map(cat => `
+                <button onclick="setFilter('${cat}')" class="px-10 py-5 rounded-[1.5rem] text-[10px] font-black tracking-widest transition-all border shrink-0 ${
+                    currentFilter === cat ? 'bg-blue-600 text-white border-blue-600 shadow-2xl' : 'bg-white/5 text-slate-400 border-white/5 hover:bg-white/10'
+                }">${cat.toUpperCase()}</button>
+            `).join('');
+        }
+
+        function setFilter(category) {
+            currentFilter = category;
+            renderFilters(); renderItems();
+            if(isMapView) updateMapMarkers();
+        }
+
+        function renderItems() {
+            const grid = document.getElementById('resultsGrid');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = database[currentTab].filter(i =>
+                (currentFilter === 'All' || i.category === currentFilter) &&
+                (i.title.toLowerCase().includes(search) || i.description.toLowerCase().includes(search))
+            );
+
+            document.getElementById('emptyState').classList.toggle('hidden', filtered.length > 0);
+            grid.innerHTML = filtered.map((item, idx) => `
+                <div onclick="openModal(${item.id})" class="animate-fade-up glass-card rounded-[3.5rem] p-8 transition-all group cursor-pointer" style="animation-delay: ${idx * 0.05}s">
+                    <div class="w-full h-72 rounded-[3rem] overflow-hidden relative shadow-2xl mb-10">
+                        <img src="${item.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s]" alt="">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 flex gap-3">
+                             <span class="text-[10px] font-black text-white bg-blue-600/90 backdrop-blur-md px-5 py-2 rounded-full uppercase tracking-widest">${item.category}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-black text-white text-3xl group-hover:text-blue-400 transition-colors tracking-tight truncate">${item.title}</h3>
+                            <span class="text-[11px] font-black text-emerald-400 flex items-center gap-2 bg-emerald-400/10 px-3 py-2 rounded-xl border border-emerald-400/20"><i class="fa-solid fa-star"></i> ${item.rating}</span>
+                        </div>
+                        <p class="text-[13px] text-slate-500 font-bold mb-8 flex items-center tracking-wide"><i class="fa-solid fa-location-arrow mr-3 text-blue-500"></i> ${item.distance}</p>
+                        <p class="text-slate-400 text-base leading-relaxed line-clamp-2 mb-10 font-medium">${item.description}</p>
+                        <div class="flex gap-4 overflow-hidden">
+                            ${item.tags.slice(0, 3).map(t => `<span class="text-[10px] bg-white/5 text-slate-500 px-4 py-2 rounded-xl border border-white/5 font-black uppercase tracking-widest">${t}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', () => { renderItems(); });
+
+        function openModal(id) {
+            const item = [...database.inCampus, ...database.outCampus].find(i => i.id === id);
+            if (!item) return;
+            document.getElementById('modalImage').src = item.image;
+            document.getElementById('modalCategory').textContent = item.category;
+            document.getElementById('modalTitle').textContent = item.title;
+            document.getElementById('modalRating').textContent = item.rating;
+            document.getElementById('modalDistance').textContent = item.distance;
+            document.getElementById('modalDescription').textContent = item.description;
+            document.getElementById('modalTags').innerHTML = item.tags.map(t => `<span class="bg-white/5 text-slate-300 px-8 py-4 rounded-3xl text-[12px] font-black border border-white/10 uppercase tracking-[0.2em] shadow-inner">${t}</span>`).join('');
+            document.getElementById('modalMapLink').href = `https://www.google.com/maps/dir/?api=1&destination=${item.coords[0]},${item.coords[1]}`;
+            
+            const modal = document.getElementById('detailModal');
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                document.getElementById('modalBackdrop').classList.replace('opacity-0', 'opacity-100');
+                document.getElementById('modalPanel').classList.remove('translate-y-full');
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('modalBackdrop').classList.replace('opacity-100', 'opacity-0');
+            document.getElementById('modalPanel').classList.add('translate-y-full');
+            setTimeout(() => document.getElementById('detailModal').classList.add('hidden'), 500);
+        }
+
+        function initMap() {
+            mapInstance = L.map('map', { zoomControl: false }).setView(collegeCoords, 14);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png').addTo(mapInstance);
+            updateMapMarkers();
+        }
+
+        function updateMapMarkers() {
+            if (!mapInstance) return;
+            markers.forEach(m => mapInstance.removeLayer(m)); markers = [];
+            
+            const collegeIcon = L.divIcon({ className: 'custom-icon', html: `<div class="w-10 h-10 bg-blue-500 rounded-full border-4 border-white shadow-[0_0_40px_rgba(59,130,246,0.8)] animate-pulse"></div>`, iconSize: [40, 40] });
+            markers.push(L.marker(collegeCoords, {icon: collegeIcon}).addTo(mapInstance));
+
+            if (currentTab === 'outCampus') mapInstance.flyTo(collegeCoords, 14);
+            else mapInstance.flyTo(collegeCoords, 17);
+
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = database[currentTab].filter(i => (currentFilter === 'All' || i.category === currentFilter) && i.title.toLowerCase().includes(search));
+
+            filtered.forEach(item => {
+                const icon = L.divIcon({
+                    className: 'custom-icon',
+                    html: `<div class="custom-marker"><i class="fa-solid fa-location-dot"></i></div>`,
+                    iconSize: [34, 34], iconAnchor: [17, 34]
+                });
+                markers.push(L.marker(item.coords, { icon: icon }).addTo(mapInstance).on('click', () => openModal(item.id)));
+            });
+        }
+    </script>
+</body>
+</html>
