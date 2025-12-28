@@ -1,0 +1,158 @@
+[
+  {
+    "id": 1766907485898,
+    "title": "Kmart",
+    "category": "Shopping",
+    "description": "KMart Shooping ",
+    "tags": [
+      "Shooping mall"
+    ],
+    "coords": [
+      798645321.5486797,
+      4653213565
+    ],
+    "image": "",
+    "distance": "1KM ",
+    "submittedAt": "2025-12-28T07:38:05.898Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766907796535,
+    "title": "dtsdgfhjkl",
+    "category": "Food",
+    "description": "cgvhbj",
+    "tags": [
+      "cfgvhbjn"
+    ],
+    "coords": [
+      35,
+      2
+    ],
+    "image": "",
+    "distance": " gcgvnbm",
+    "submittedAt": "2025-12-28T07:43:16.536Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766908099862,
+    "title": "Kmart",
+    "category": "Shopping",
+    "description": "dfgfhj",
+    "tags": [],
+    "coords": [
+      4563215,
+      0.5
+    ],
+    "image": "",
+    "distance": "",
+    "submittedAt": "2025-12-28T07:48:19.862Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766908099881,
+    "title": "Kmart",
+    "category": "Shopping",
+    "description": "dfgfhj",
+    "tags": [],
+    "coords": [
+      4563215,
+      0.54
+    ],
+    "image": "",
+    "distance": "",
+    "submittedAt": "2025-12-28T07:48:19.881Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766908812301,
+    "title": "Kmart",
+    "category": "Shopping",
+    "description": "KHJCahs, kdcbh wa",
+    "tags": [],
+    "coords": [
+      6876453,
+      468
+    ],
+    "image": "",
+    "distance": "",
+    "submittedAt": "2025-12-28T08:00:12.301Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766908852431,
+    "title": "Kmart",
+    "category": "Shopping",
+    "description": "vds c",
+    "tags": [],
+    "coords": [
+      2345678,
+      456789
+    ],
+    "image": "",
+    "distance": "",
+    "submittedAt": "2025-12-28T08:00:52.431Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766909062558,
+    "title": "sedgavrse g",
+    "category": "Sports",
+    "description": "esadvf 987659",
+    "tags": [],
+    "coords": [
+      992638,
+      46287381
+    ],
+    "image": "",
+    "distance": "",
+    "submittedAt": "2025-12-28T08:04:22.558Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766909283161,
+    "title": "ugu gjhdskvvc",
+    "category": "Utility",
+    "description": "cds756326e78",
+    "tags": [],
+    "coords": [
+      2189723,
+      38927692
+    ],
+    "image": "",
+    "distance": "",
+    "submittedAt": "2025-12-28T08:08:03.161Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766909383883,
+    "title": "Test Location",
+    "category": "Food",
+    "description": "Test description",
+    "tags": [
+      "test"
+    ],
+    "coords": [
+      21.212,
+      81.3733
+    ],
+    "image": "",
+    "distance": "1 km",
+    "submittedAt": "2025-12-28T08:09:43.883Z",
+    "status": "pending"
+  },
+  {
+    "id": 1766909512351,
+    "title": "bdjksv bsi",
+    "category": "Utility",
+    "description": "sdkjv sb",
+    "tags": [],
+    "coords": [
+      78234568356,
+      78354629
+    ],
+    "image": "",
+    "distance": "",
+    "submittedAt": "2025-12-28T08:11:52.351Z",
+    "status": "pending"
+  }
+]

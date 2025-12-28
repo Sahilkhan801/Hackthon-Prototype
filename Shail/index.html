@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Xplorify | Rungta International Skill University</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <link rel="stylesheet" href="style.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="text-slate-100 h-screen flex flex-col overflow-hidden font-sans">
+
+    <div id="pageScrollContainer" class="flex-1 overflow-y-auto no-scrollbar relative content-gradient">
+
+        <header class="animated-gradient-bg min-h-[600px] flex items-center relative overflow-hidden">
+            <div class="hero-mesh">
+                <div class="floating-orb w-[500px] h-[500px] bg-blue-600/10 top-[-10%] right-[-5%]" style="animation-delay: 0s;"></div>
+                <div class="floating-orb w-96 h-96 bg-indigo-600/10 bottom-[-10%] left-[-5%]" style="animation-delay: -2s;"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6 py-20 w-full relative z-10">
+                <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+                    <div class="flex-1 text-center lg:text-left animate-fade-up">
+                        <div class="inline-flex items-center gap-3 bg-blue-500/10 border border-blue-500/20 px-5 py-2.5 rounded-2xl mb-10 backdrop-blur-xl">
+                            <span class="relative flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            </span>
+                            <span class="text-[11px] font-black uppercase tracking-[0.4em] text-emerald-400">Campus+Local Live Telemetry</span>
+                        </div>
+
+                        <h1 class="text-6xl lg:text-8xl font-black mb-8 tracking-tighter leading-[0.9] text-gradient">
+                            Xplorify <br/> </h1> <h2> EXPLORE YOUR WORLD </h2>
+
+
+                        <p class="text-xl text-slate-400 max-w-xl mx-auto lg:mx-0 mb-12 font-medium leading-relaxed">
+                            A smart-discovery engine for <strong>Rungta International Skill University</strong>. Experience the campus with real-time facility insights and local intelligence.
+                        </p>
+
+                        <div class="flex flex-wrap items-center justify-center lg:justify-start gap-6">
+                            <button onclick="toggleView()" class="btn-premium text-white px-12 py-6 rounded-[2rem] font-black text-xs tracking-widest flex items-center gap-4 group">
+                                <i class="fa-solid fa-map-location-dot text-xl group-hover:rotate-12 transition-transform"></i> EXPLORE INTERACTIVE MAP
+                            </button>
+                            <div class="hidden sm:flex items-center gap-5 px-8 py-5 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-md">
+                                <div class="text-left">
+                                    <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Network Node</p>
+                                    <p class="text-xs font-mono font-bold text-blue-400">10.0.5.151</p>
+                                </div>
+                                <div class="w-px h-8 bg-white/10"></div>
+                                <i class="fa-solid fa-signal text-emerald-500 animate-pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 w-full max-w-xl animate-fade-up" style="animation-delay: 0.2s;">
+                        <div class="dashboard-glass rounded-[3.5rem] p-1 shadow-2xl overflow-hidden group">
+                            <div class="bg-slate-900/40 rounded-[3.4rem] p-10 relative">
+                                <div class="flex items-center justify-between mb-10 pb-6 border-b border-white/5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/40">
+                                            <i class="fa-solid fa-microchip text-white text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Campus Intelligence</p>
+                                            <p class="text-xs font-bold text-white">v2.5 Terminal</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="flex items-center gap-2 justify-end">
+                                            <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                                            <p class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Time+5:30</p>
+                                        </div>
+                                        <p id="liveTime" class="text-xs font-mono font-bold text-slate-400 mt-1">00:00:00</p>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-6 mb-10">
+                                    <div class="bg-white/5 rounded-[2rem] p-6 border border-white/5 hover:border-blue-500/30 transition-all cursor-default group/mod">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <i class="fa-solid fa-mug-hot text-orange-400"></i>
+                                            <span class="text-[8px] font-black text-orange-400 bg-orange-400/10 px-2 py-1 rounded-md">BUSY</span>
+                                        </div>
+                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Chai Adda</p>
+                                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-2">
+                                            <div class="h-full bg-orange-500 w-[85%]"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-white/5 rounded-[2rem] p-6 border border-white/5 hover:border-blue-500/30 transition-all cursor-default">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <i class="fa-solid fa-book text-blue-400"></i>
+                                            <span class="text-[8px] font-black text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-md">QUIET</span>
+                                        </div>
+                                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Library (C Block)</p>
+                                        <div class="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-2">
+                                            <div class="h-full bg-emerald-500 w-[30%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4 mb-10">
+                                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                                        <div class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                        <p class="text-[11px] font-medium text-slate-300">Exam Section is currently <strong>processing</strong> admit cards.</p>
+                                    </div>
+                                    <div class="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5 opacity-60">
+                                        <div class="w-2 h-2 rounded-full bg-slate-600"></div>
+                                        <p class="text-[11px] font-medium text-slate-400">Admission Section updated: +12 new registrations.</p>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-3 gap-4 pt-8 border-t border-white/5">
+                                    <div class="flex flex-col items-center">
+                                        <div class="stat-ring mb-3">
+                                            <div class="stat-ring-progress" style="border-top-color: #3b82f6; transform: rotate(120deg);"></div>
+                                            <i class="fa-solid fa-graduation-cap text-xs text-blue-400"></i>
+                                        </div>
+                                        <p class="text-xs font-black text-white">4 Blocks</p>
+                                        <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Academic</p>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="stat-ring mb-3">
+                                            <div class="stat-ring-progress" style="border-top-color: #f59e0b; transform: rotate(240deg);"></div>
+                                            <i class="fa-solid fa-utensils text-xs text-orange-400"></i>
+                                        </div>
+                                        <p class="text-xs font-black text-white">6 Spots</p>
+                                        <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Dining</p>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="stat-ring mb-3">
+                                            <div class="stat-ring-progress" style="border-top-color: #10b981; transform: rotate(350deg);"></div>
+                                            <i class="fa-solid fa-square-parking text-xs text-emerald-400"></i>
+                                        </div>
+                                        <p class="text-xs font-black text-white">Secure</p>
+                                        <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Parking</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#020617] to-transparent z-0"></div>
+        </header>
+
+        <div class="sticky-nav bg-dark-950/80 backdrop-blur-3xl">
+            <div class="max-w-7xl mx-auto px-6 py-8">
+                <div class="flex flex-col md:flex-row gap-8 items-center">
+                    <div class="relative group flex-1 w-full">
+                        <div class="absolute inset-y-0 left-0 pl-7 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-search text-blue-500/40 group-focus-within:text-blue-500 transition-colors"></i>
+                        </div>
+                        <input type="text" id="searchInput" placeholder="Search Rubi, Admissions, PG rooms, Chai Adda..."
+                            class="w-full bg-white/5 text-white pl-16 pr-8 py-6 rounded-[2rem] border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium placeholder-slate-500 text-sm transition-all shadow-2xl">
+                    </div>
+
+                    <div class="flex items-center gap-4 shrink-0">
+                        <button onclick="openSubmitLocalityModal()" class="px-8 py-4 bg-emerald-600 text-white rounded-[1.5rem] font-black text-[10px] tracking-[0.2em] shadow-xl shadow-emerald-600/30 hover:bg-emerald-500 transition-all">
+                            <i class="fa-solid fa-plus mr-2"></i>ADD LOCALITY
+                        </button>
+                        <button onclick="openFeedbackModal()" class="px-8 py-4 bg-purple-600 text-white rounded-[1.5rem] font-black text-[10px] tracking-[0.2em] shadow-xl shadow-purple-600/30 hover:bg-purple-500 transition-all">
+                            <i class="fa-solid fa-comments mr-2"></i>FEEDBACK
+                        </button>
+                        <div class="flex p-2 bg-white/5 border border-white/10 rounded-[2rem] backdrop-blur-xl">
+                            <button onclick="switchTab('inCampus')" id="tab-inCampus" class="px-10 py-4 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] transition-all text-white bg-blue-600 shadow-xl shadow-blue-600/30">
+                                IN-CAMPUS
+                            </button>
+                            <button onclick="switchTab('outCampus')" id="tab-outCampus" class="px-10 py-4 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] transition-all text-slate-400 hover:text-slate-200">
+                                OUT-CAMPUS
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="listViewContainer" class="p-6 pb-48">
+
+            <div class="flex gap-4 overflow-x-auto no-scrollbar mb-16 py-4 max-w-7xl mx-auto" id="filterContainer">
+                </div>
+
+            <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
+                </div>
+
+            <div id="emptyState" class="hidden flex flex-col items-center justify-center py-48 text-center">
+                <div class="w-32 h-32 bg-white/5 rounded-full flex items-center justify-center mb-10 border border-white/10">
+                    <i class="fa-solid fa-compass text-5xl text-slate-700"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-300 mb-2">Location Not Found</h3>
+                <p class="text-sm font-bold text-slate-500 uppercase tracking-[0.3em]">Try searching for 'Block' or 'Chai'</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="mapViewContainer" class="fixed inset-0 translate-x-full transition-transform duration-700 z-50 bg-slate-950">
+        <div id="map"></div>
+        <button onclick="toggleView()" class="absolute top-10 left-10 z-[1000] dashboard-glass text-white px-10 py-5 rounded-[2rem] font-black text-[10px] tracking-[0.3em] shadow-2xl flex items-center gap-4 active:scale-95 transition-transform border border-white/20">
+            <i class="fa-solid fa-chevron-left text-blue-400"></i> RETURN TO DASHBOARD
+        </button>
+    </div>
+
+    <!-- Locality Submission Modal -->
+    <div id="submitLocalityModal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/95 backdrop-blur-2xl opacity-0 transition-opacity" id="submitLocalityBackdrop" onclick="closeSubmitLocalityModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-8 pointer-events-none">
+            <div class="bg-slate-900 w-full max-w-2xl rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] transform translate-y-full transition-transform duration-600 pointer-events-auto max-h-[90vh] overflow-y-auto border border-white/10" id="submitLocalityPanel">
+                <div class="p-14">
+                    <div class="flex items-center justify-between mb-10">
+                        <h2 class="text-4xl font-black text-white">Add New Locality</h2>
+                        <button onclick="closeSubmitLocalityModal()" class="bg-black/40 hover:bg-black/60 backdrop-blur-3xl text-white w-16 h-16 rounded-full flex items-center justify-center border border-white/10 transition-all active:scale-90">
+                            <i class="fa-solid fa-xmark text-2xl"></i>
+                        </button>
+                    </div>
+
+                    <form id="localityForm" class="space-y-8">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Title</label>
+                                <input type="text" id="localityTitle" required class="w-full bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Category</label>
+                                <select id="localityCategory" required class="w-full bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium">
+                                    <option value="">Select Category</option>
+                                    <option value="Academic">Academic</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Utility">Utility</option>
+                                    <option value="Parking">Parking</option>
+                                    <option value="Sports">Sports</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Emergency">Emergency</option>
+                                    <option value="Living">Living</option>
+                                    <option value="Fuel">Fuel</option>
+                                    <option value="Station">Station</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Description</label>
+                            <textarea id="localityDescription" required rows="4" class="w-full bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium resize-none"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Latitude</label>
+                                <input type="number" step="any" id="localityLat" required class="w-full bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Longitude</label>
+                                <input type="number" step="any" id="localityLng" required class="w-full bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Tags (comma-separated)</label>
+                            <input type="text" id="localityTags" placeholder="e.g., Tea, Hangout, Maggi" class="w-full bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Distance from College</label>
+                            <input type="text" id="localityDistance" placeholder="e.g., 2.5 km or Campus Center" class="w-full bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium">
+                        </div>
+
+                        <div class="flex gap-6 pt-6">
+                            <button type="button" onclick="closeSubmitLocalityModal()" class="flex-1 py-6 bg-slate-700 text-white rounded-[2rem] font-black text-sm tracking-widest border border-white/10 hover:bg-slate-600 transition-all">
+                                CANCEL
+                            </button>
+                            <button type="submit" class="flex-1 py-6 bg-blue-600 text-white rounded-[2rem] font-black text-sm tracking-widest shadow-[0_20px_40px_-10px_rgba(37,99,235,0.5)] hover:bg-blue-500 transition-all">
+                                SUBMIT FOR VERIFICATION
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/95 backdrop-blur-2xl opacity-0 transition-opacity" id="feedbackBackdrop" onclick="closeFeedbackModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-8 pointer-events-none">
+            <div class="bg-slate-900 w-full max-w-2xl rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] transform translate-y-full transition-transform duration-600 pointer-events-auto border border-white/10" id="feedbackPanel">
+                <div class="p-14">
+                    <div class="flex items-center justify-between mb-10">
+                        <h2 class="text-4xl font-black text-white">Share Your Feedback</h2>
+                        <button onclick="closeFeedbackModal()" class="bg-black/40 hover:bg-black/60 backdrop-blur-3xl text-white w-16 h-16 rounded-full flex items-center justify-center border border-white/10 transition-all active:scale-90">
+                            <i class="fa-solid fa-xmark text-2xl"></i>
+                        </button>
+                    </div>
+
+                    <form id="feedbackForm" class="space-y-8">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-400 mb-4 uppercase tracking-widest">How satisfied are you with Xploify?</label>
+                            <div class="flex gap-4 justify-center">
+                                <input type="radio" id="rating1" name="rating" value="1" class="hidden">
+                                <label for="rating1" class="cursor-pointer">
+                                    <i class="fa-solid fa-star text-2xl text-slate-600 hover:text-yellow-400 transition-colors star-rating"></i>
+                                </label>
+                                <input type="radio" id="rating2" name="rating" value="2" class="hidden">
+                                <label for="rating2" class="cursor-pointer">
+                                    <i class="fa-solid fa-star text-2xl text-slate-600 hover:text-yellow-400 transition-colors star-rating"></i>
+                                </label>
+                                <input type="radio" id="rating3" name="rating" value="3" class="hidden">
+                                <label for="rating3" class="cursor-pointer">
+                                    <i class="fa-solid fa-star text-2xl text-slate-600 hover:text-yellow-400 transition-colors star-rating"></i>
+                                </label>
+                                <input type="radio" id="rating4" name="rating" value="4" class="hidden">
+                                <label for="rating4" class="cursor-pointer">
+                                    <i class="fa-solid fa-star text-2xl text-slate-600 hover:text-yellow-400 transition-colors star-rating"></i>
+                                </label>
+                                <input type="radio" id="rating5" name="rating" value="5" class="hidden">
+                                <label for="rating5" class="cursor-pointer">
+                                    <i class="fa-solid fa-star text-2xl text-slate-600 hover:text-yellow-400 transition-colors star-rating"></i>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-bold text-slate-400 mb-2 uppercase tracking-widest">Additional Comments</label>
+                            <textarea id="feedbackComments" rows="4" placeholder="Tell us what you think..." class="w-full bg-white/5 text-white px-6 py-4 rounded-2xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-medium resize-none"></textarea>
+                        </div>
+
+                        <div class="flex gap-6 pt-6">
+                            <button type="button" onclick="closeFeedbackModal()" class="flex-1 py-6 bg-slate-700 text-white rounded-[2rem] font-black text-sm tracking-widest border border-white/10 hover:bg-slate-600 transition-all">
+                                SKIP
+                            </button>
+                            <button type="submit" class="flex-1 py-6 bg-blue-600 text-white rounded-[2rem] font-black text-sm tracking-widest shadow-[0_20px_40px_-10px_rgba(37,99,235,0.5)] hover:bg-blue-500 transition-all">
+                                SUBMIT FEEDBACK
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/95 backdrop-blur-2xl opacity-0 transition-opacity" id="modalBackdrop" onclick="closeModal()"></div>
+        <div class="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-8 pointer-events-none">
+            <div class="bg-slate-900 w-full sm:max-w-3xl sm:rounded-[4rem] rounded-t-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,1)] transform translate-y-full transition-transform duration-600 pointer-events-auto max-h-[96vh] flex flex-col overflow-hidden border border-white/10" id="modalPanel">
+                <div class="relative h-[480px] shrink-0">
+                    <img id="modalImage" src="" class="w-full h-full object-cover" alt="">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+                    <button onclick="closeModal()" class="absolute top-10 right-10 bg-black/40 hover:bg-black/60 backdrop-blur-3xl text-white w-16 h-16 rounded-full flex items-center justify-center border border-white/10 transition-all active:scale-90">
+                        <i class="fa-solid fa-xmark text-2xl"></i>
+                    </button>
+                    <div class="absolute bottom-0 left-0 w-full p-14">
+                        <span id="modalCategory" class="inline-block bg-blue-600 text-white text-[10px] font-black px-6 py-2.5 rounded-full uppercase tracking-[0.3em] mb-8 shadow-2xl shadow-blue-600/40">CATEGORY</span>
+                        <h2 id="modalTitle" class="text-6xl font-black text-white leading-tight tracking-tighter">Title</h2>
+                    </div>
+                </div>
+
+                <div class="p-14 overflow-y-auto no-scrollbar flex-1 bg-slate-900">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-10 mb-14 pb-12 border-b border-white/5">
+                        <div class="flex flex-col gap-4">
+                            <span class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em]">Spatial Awareness</span>
+                            <div class="flex items-center text-blue-400 font-bold text-xl">
+                                <div class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mr-5 border border-blue-500/20">
+                                    <i class="fa-solid fa-map-location-dot"></i>
+                                </div>
+                                <span id="modalDistance">Campus Center</span>
+                            </div>
+                        </div>
+                        <div class="bg-emerald-500/10 text-emerald-400 px-8 py-4 rounded-3xl text-sm font-black flex items-center gap-5 border border-emerald-500/20 w-fit">
+                            <span id="modalRating">4.9</span>
+                            <i class="fa-solid fa-star text-xs"></i>
+                        </div>
+                    </div>
+
+                    <div class="mb-14">
+                        <h3 class="text-[11px] font-black text-slate-500 uppercase tracking-[0.4em] mb-8">Asset Description</h3>
+                        <p id="modalDescription" class="text-slate-300 text-2xl leading-[1.6] font-medium tracking-tight">Description text...</p>
+                    </div>
+
+                    <div id="modalTags" class="flex flex-wrap gap-5 mb-20"></div>
+
+                    <div class="grid grid-cols-2 gap-8 sticky bottom-0 bg-slate-900 pt-10 pb-2">
+                        <button class="flex items-center justify-center gap-5 py-7 bg-slate-800 rounded-[2.5rem] font-black text-white text-[11px] tracking-[0.3em] border border-white/5 hover:bg-slate-700 transition-all group">
+                            <i class="fa-solid fa-bookmark group-hover:scale-125 transition-transform"></i> SAVE RECORD
+                        </button>
+                        <a id="modalMapLink" href="#" target="_blank" class="flex items-center justify-center gap-5 py-7 bg-blue-600 text-white rounded-[2.5rem] font-black text-[11px] tracking-[0.3em] shadow-[0_20px_40px_-10px_rgba(37,99,235,0.5)] hover:bg-blue-500 transition-all group">
+                            <i class="fa-solid fa-location-arrow group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i> START GUIDANCE
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="script.js"></script>
+
+</body>
+</html>

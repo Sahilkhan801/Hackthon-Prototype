@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xploify Admin - Verify Submissions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+    <div class="container mx-auto px-6 py-8">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fa-solid fa-shield-alt text-blue-500 text-3xl"></i>
+            <h1 class="text-4xl font-black">Xploify Admin Panel</h1>
+        </div>
+
+        <div class="bg-slate-800 rounded-3xl p-8 border border-slate-700">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <i class="fa-solid fa-list-check text-green-500"></i>
+                Pending Submissions
+            </h2>
+
+            <div id="submissionsContainer" class="space-y-6">
+                <!-- Submissions will be loaded here -->
+            </div>
+
+            <div id="emptyState" class="text-center py-12 text-slate-400 hidden">
+                <i class="fa-solid fa-inbox text-6xl mb-4"></i>
+                <p class="text-xl">No pending submissions</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadSubmissions() {
+            try {
+                const response = await fetch('/api/pending-submissions');
+                const submissions = await response.json();
+
+                const container = document.getElementById('submissionsContainer');
+                const emptyState = document.getElementById('emptyState');
+
+                if (submissions.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    container.innerHTML = '';
+                    return;
+                }
+
+                emptyState.classList.add('hidden');
+
+                container.innerHTML = submissions.map(submission => `
+                    <div class="bg-slate-700 rounded-2xl p-6 border border-slate-600">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-blue-400">${submission.title}</h3>
+                                <p class="text-sm text-slate-400 uppercase tracking-widest">${submission.category}</p>
+                            </div>
+                            <div class="text-right text-sm text-slate-500">
+                                <p>${new Date(submission.submittedAt).toLocaleDateString()}</p>
+                                <p>${new Date(submission.submittedAt).toLocaleTimeString()}</p>
+                            </div>
+                        </div>
+
+                        <p class="text-slate-300 mb-4">${submission.description}</p>
+
+                        <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                            <div>
+                                <span class="text-slate-500">Distance:</span>
+                                <span class="text-white ml-2">${submission.distance}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-500">Coordinates:</span>
+                                <span class="text-white ml-2">${submission.coords[0]}, ${submission.coords[1]}</span>
+                            </div>
+                        </div>
+
+                        ${submission.tags.length > 0 ? `
+                            <div class="mb-6">
+                                <span class="text-slate-500 text-sm">Tags:</span>
+                                <div class="flex gap-2 mt-2">
+                                    ${submission.tags.map(tag => `<span class="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-xs">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        <div class="flex gap-4">
+                            <button onclick="verifySubmission(${submission.id}, true)"
+                                    class="flex-1 bg-green-600 hover:bg-green-500 text-white py-3 px-6 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-check"></i>
+                                Approve
+                            </button>
+                            <button onclick="verifySubmission(${submission.id}, false)"
+                                    class="flex-1 bg-red-600 hover:bg-red-500 text-white py-3 px-6 rounded-xl font-bold transition-colors flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-xmark"></i>
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+                document.getElementById('submissionsContainer').innerHTML =
+                    '<p class="text-red-400 text-center py-8">Error loading submissions</p>';
+            }
+        }
+
+        async function verifySubmission(id, approved) {
+            try {
+                const response = await fetch(`/api/verify-locality/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ verified: approved })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(`Submission ${approved ? 'approved' : 'rejected'} successfully!`);
+                    loadSubmissions(); // Reload the list
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error verifying submission:', error);
+                alert('Error verifying submission');
+            }
+        }
+
+        // Load submissions when page loads
+        loadSubmissions();
+
+        // Refresh submissions every 5 seconds for real-time updates
+        setInterval(loadSubmissions, 5000);
+    </script>
+</body>
+</html>
